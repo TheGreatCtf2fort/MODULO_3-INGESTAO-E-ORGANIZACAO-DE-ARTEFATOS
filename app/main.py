@@ -1,0 +1,34 @@
+from fastapi import FastAPI
+
+from app.database import Base, engine
+from app.models import Artifact, Project
+from app.routers.artifacts import router as artifacts_router
+from app.routers.projects import router as projects_router
+
+
+Base.metadata.create_all(bind=engine)
+
+
+app = FastAPI(
+    title="Artifact Service",
+    description="Módulo de ingestão e organização de artefatos",
+    version="0.1.0",
+)
+
+
+app.include_router(projects_router)
+app.include_router(artifacts_router)
+
+
+@app.get("/")
+def root():
+    return {
+        "message": "Artifact Service is running"
+    }
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy"
+    }
